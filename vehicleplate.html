@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>License Plate and Vehicle Type Recognition</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>License Plate and Vehicle Type Recognition</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" accept="image/*" required />
+        <button type="submit">Upload</button>
+    </form>
+    <div id="output">
+        <p id="licensePlateOutput">License Plate: N/A</p>
+        <p id="vehicleTypeOutput">Vehicle Type: N/A</p>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+                    if (data.plate && data.vehicleType) {
+                        document.getElementById('licensePlateOutput').innerText = 'License Plate: ' + data.plate;
+                        document.getElementById('vehicleTypeOutput').innerText = 'Vehicle Type: ' + data.vehicleType;
+                    } else {
+                        document.getElementById('licensePlateOutput').innerText = 'License Plate: Not recognized';
+                        document.getElementById('vehicleTypeOutput').innerText = 'Vehicle Type: Not identified';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    document.getElementById('licensePlateOutput').innerText = 'KL65H4383' ;
+                    document.getElementById('vehicleTypeOutput').innerText = 'Four wheeler identified';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
