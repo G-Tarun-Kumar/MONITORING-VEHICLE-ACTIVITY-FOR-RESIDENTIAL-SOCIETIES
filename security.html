@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Portal</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .dashboard-header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .logout-btn:hover {
+            background-color: #c9302c;
+        }
+        .dashboard-content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .highlight-input {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+        }
+        .hidden {
+            display: none;
+        }
+        #confirmationMessage {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+        }
+        #savedDetails {
+            margin-top: 30px;
+        }
+        #savedDetails table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        #savedDetails th,
+        #savedDetails td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+        #savedDetails th {
+            background-color: #007bff;
+            color: white;
+        }
+        #savedDetails tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        #savedDetails tr:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1>Security Portal</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </header>
+    <div class="dashboard-content">
+        <h2>Vehicle Entry/Exit</h2>
+        <form id="vehicleDetailsForm">
+            <div class="form-group">
+                <label for="licencePlate">License Plate</label>
+                <input type="text" id="licencePlate" placeholder="Enter the license plate" required>
+            </div>
+
+            <div id="newOwnerDetails" class="form-group hidden">
+                <label for="ownerName">Owner Name</label>
+                <input type="text" id="ownerName" placeholder="Enter owner's name">
+            </div>
+
+            <div class="form-group">
+                <label>Entry or Exit</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="entryExit" value="Entry" required>
+                        Entry
+                    </label>
+                  
+                    <label>
+                        <input type="radio" name="entryExit" value="Exit" required>
+                        Exit
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="vehicleType">Vehicle Type</label>
+                <select id="vehicleType" required>
+                    <option value="">Select vehicle type</option>
+                    <option value="4 Wheeler">4 Wheeler</option>
+                    <option value="2 Wheeler">2 Wheeler</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="vehicleImage">Upload Vehicle Image</label>
+                <input type="file" id="vehicleImage" accept="image/*">
+            </div>
+            <button type="submit" class="btn-success">Save Details</button>
+        </form>
+
+        <div id="confirmationMessage">Details saved successfully!</div>
+        <div id="savedDetails">
+            <h2>Recent Entry/Exit Logs</h2>
+            <!-- Table will be populated dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Function to get admin people details from localStorage
+        function getAdminPeopleDetails() {
+            const peopleDetailsKey = 'peopleDetails';
+            return JSON.parse(localStorage.getItem(peopleDetailsKey)) || [];
+        }
+        // Function to check license plate and handle owner name input
+        document.getElementById('licencePlate').addEventListener('input', function() {
+            const licencePlate = this.value.trim();
+            const ownerDetailsDiv = document.getElementById('newOwnerDetails');
+            const ownerNameInput = document.getElementById('ownerName');   
+            const adminPeopleDetails = getAdminPeopleDetails();
+            const matchedPerson = adminPeopleDetails.find(person => 
+                person.licencePlate.toLowerCase() === licencePlate.toLowerCase()
+            );
+
+            if (matchedPerson) {
+                ownerDetailsDiv.classList.add('hidden');
+                ownerNameInput.value = matchedPerson.ownerName;
+            } else {
+                ownerDetailsDiv.classList.remove('hidden');
+                ownerNameInput.value = '';
+                ownerNameInput.classList.add('highlight-input');
+            }
+        });
+        // Handle form submission
+        document.getElementById('vehicleDetailsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const licencePlate = document.getElementById('licencePlate').value.trim();
+            const ownerNameInput = document.getElementById('ownerName');
+            const vehicleType = document.getElementById('vehicleType').value;
+            const vehicleImageInput = document.getElementById('vehicleImage');
+            const entryExit = document.querySelector('input[name="entryExit"]:checked').value;
+            const timestamp = new Date().toLocaleString();
+            // Get owner name (either from matched person or input)
+            const adminPeopleDetails = getAdminPeopleDetails();
+            const matchedPerson = adminPeopleDetails.find(person => 
+                person.licencePlate.toLowerCase() === licencePlate.toLowerCase()
+            );
+            const ownerName = matchedPerson ? matchedPerson.ownerName : ownerNameInput.value;
+            // Get image URL
+            const vehicleImage = vehicleImageInput.files[0] ? URL.createObjectURL(vehicleImageInput.files[0]) : '';
+            // Save entry/exit log
+            const entryExitLogs = JSON.parse(localStorage.getItem('entryExitLogs')) || [];
+            entryExitLogs.push({
+                licencePlate,
+                ownerName,
+                vehicleType,
+                entryExit,
+                vehicleImage,
+                timestamp
+            });
+            localStorage.setItem('entryExitLogs', JSON.stringify(entryExitLogs));
+            // Show confirmation and update display
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            confirmationMessage.style.display = 'block';
+            setTimeout(() => {
+                confirmationMessage.style.display = 'none';
+            }, 3000);
+            displaySavedDetails();
+            resetForm();
+        });
+
+        // Function to display saved entry/exit details
+        function displaySavedDetails() {
+            const entryExitLogs = JSON.parse(localStorage.getItem('entryExitLogs')) || [];
+            const savedDetailsDiv = document.getElementById('savedDetails');
+            if (entryExitLogs.length === 0) {
+                savedDetailsDiv.innerHTML = '<h2>Recent Entry/Exit Logs</h2><p>No entry/exit logs available.</p>';
+                return;
+            }
+            const table = `
+                <h2>Recent Entry/Exit Logs</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>License Plate</th>
+                            <th>Owner Name</th>
+                            <th>Vehicle Type</th>
+                            <th>Entry/Exit</th>
+                            <th>Image</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${entryExitLogs.reverse().slice(0, 10).map(log => `
+                            <tr>
+                                <td>${log.licencePlate}</td>
+                                <td>${log.ownerName}</td>
+                                <td>${log.vehicleType}</td>
+                                <td>${log.entryExit}</td>
+                                <td>${log.vehicleImage ? `<img src="${log.vehicleImage}" alt="Vehicle" width="100">` : 'No Image'}</td>
+                                <td>${log.timestamp}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            savedDetailsDiv.innerHTML = table;
+        }
+
+        // Function to reset the form
+        function resetForm() {
+            const form = document.getElementById('vehicleDetailsForm');
+            const ownerNameInput = document.getElementById('ownerName');
+            const ownerDetailsDiv = document.getElementById('newOwnerDetails');
+            form.reset();
+            ownerNameInput.classList.remove('highlight-input');
+            ownerDetailsDiv.classList.add('hidden');
+        }
+
+        // Function to handle logout
+        function logout() {
+            window.location.href = 'login.html';
+        }
+        // Initialize the display when page loads
+        window.onload = displaySavedDetails;
+    </script>
+</body>
+</html>

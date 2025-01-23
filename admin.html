@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+
+        .dashboard-header {
+            background-color: #4a00e0;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #a71d2a;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .dashboard-content {
+            padding: 20px;
+            display: none; /* Initially hidden */
+        }
+
+        .dashboard-content.active {
+            display: block; /* Show only the active section */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table, th, td {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            color: #fff;
+        }
+
+        th {
+            background-color: #4a00e0;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.3s ease;
+        }
+
+        .section-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .section-buttons button {
+            margin: 0 10px;
+        }
+
+        img.thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <button class="btn-primary" onclick="window.location.href='login.html';">Logout</button>
+    </div>
+
+    <div class="section-buttons">
+        <button class="btn-secondary" onclick="toggleSection('peopleDetails')">People Details</button>
+        <button class="btn-secondary" onclick="toggleSection('entryExitLogs')">Entry/Exit Logs</button>
+    </div>
+
+    <!-- People Details Section -->
+    <div id="peopleDetails" class="dashboard-content active">
+        <h2>Manage People Details</h2>
+        <div class="form-container">
+            <form id="peopleDetailsForm">
+                <div class="form-group">
+                    <label for="licencePlate">License Plate</label>
+                    <input type="text" id="licencePlate" placeholder="Enter license plate" required>
+                </div>
+                <div class="form-group">
+                    <label for="ownerName">Owner Name</label>
+                    <input type="text" id="ownerName" placeholder="Enter owner name" required>
+                </div>
+                <div class="form-group">
+                    <label for="vehicleType">Vehicle Type</label>
+                    <select id="vehicleType" required>
+                        <option value="4 Wheeler">4 Wheeler</option>
+                        <option value="2 Wheeler">2 Wheeler</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vehicleImage">Vehicle Image</label>
+                    <input type="file" id="vehicleImage" accept="image/*">
+                </div>
+                <button type="submit" class="btn-success">Save</button>
+            </form>
+        </div>
+
+        <h3>People Details</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>License Plate</th>
+                    <th>Owner Name</th>
+                    <th>Vehicle Type</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="peopleTableBody">
+                <!-- People details will be populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Entry/Exit Logs Section -->
+    <div id="entryExitLogs" class="dashboard-content">
+        <h2>Entry/Exit Logs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>License Plate</th>
+                    <th>Owner Name</th>
+                    <th>Vehicle Type</th>
+                    <th>Image</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="logTableBody">
+                <!-- Logs will be populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const peopleDetailsKey = 'peopleDetails';
+        const entryExitLogsKey = 'entryExitLogs';
+
+        if (!localStorage.getItem(peopleDetailsKey)) {
+            localStorage.setItem(peopleDetailsKey, JSON.stringify([]));
+        }
+        if (!localStorage.getItem(entryExitLogsKey)) {
+            localStorage.setItem(entryExitLogsKey, JSON.stringify([]));
+        }
+
+        function toggleSection(sectionId) {
+            document.querySelectorAll('.dashboard-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function populatePeopleTable() {
+            const people = JSON.parse(localStorage.getItem(peopleDetailsKey));
+            const tableBody = document.getElementById('peopleTableBody');
+            tableBody.innerHTML = '';
+
+            people.forEach((person, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${person.licencePlate}</td>
+                    <td>${person.ownerName}</td>
+                    <td>${person.vehicleType}</td>
+                    <td>${person.image ? `<img src="${person.image}" class="thumbnail">` : 'No Image'}</td>
+                    <td>
+                        <button class="btn-success" onclick="editPerson(${index})">Edit</button>
+                        <button class="btn-danger" onclick="deletePerson(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function populateEntryExitLogs() {
+            const logs = JSON.parse(localStorage.getItem(entryExitLogsKey));
+            const tableBody = document.getElementById('logTableBody');
+            tableBody.innerHTML = '';
+
+            logs.forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${log.licencePlate}</td>
+                    <td>${log.ownerName}</td>
+                    <td>${log.vehicleType}</td>
+                    <td>${log.image ? `<img src="${log.image}" class="thumbnail">` : 'No Image'}</td>
+                    <td>${log.timestamp}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function savePeopleDetails(e) {
+            e.preventDefault();
+
+            const licencePlate = document.getElementById('licencePlate').value.trim();
+            const ownerName = document.getElementById('ownerName').value.trim();
+            const vehicleType = document.getElementById('vehicleType').value;
+            const vehicleImageInput = document.getElementById('vehicleImage');
+            let vehicleImage = '';
+
+            if (vehicleImageInput.files && vehicleImageInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    vehicleImage = event.target.result;
+                    addPersonDetails(licencePlate, ownerName, vehicleType, vehicleImage);
+                };
+                reader.readAsDataURL(vehicleImageInput.files[0]);
+            } else {
+                addPersonDetails(licencePlate, ownerName, vehicleType, vehicleImage);
+            }
+        }
+
+        function addPersonDetails(licencePlate, ownerName, vehicleType, vehicleImage) {
+            if (!licencePlate || !ownerName || !vehicleType) return;
+
+            const people = JSON.parse(localStorage.getItem(peopleDetailsKey));
+            const newPerson = { licencePlate, ownerName, vehicleType, image: vehicleImage };
+            people.push(newPerson);
+            localStorage.setItem(peopleDetailsKey, JSON.stringify(people));
+
+            const logs = JSON.parse(localStorage.getItem(entryExitLogsKey));
+            logs.push({ ...newPerson, timestamp: new Date().toLocaleString() });
+            localStorage.setItem(entryExitLogsKey, JSON.stringify(logs));
+
+            populatePeopleTable();
+            populateEntryExitLogs();
+            document.getElementById('peopleDetailsForm').reset();
+        }
+
+        function editPerson(index) {
+            const people = JSON.parse(localStorage.getItem(peopleDetailsKey));
+            const person = people[index];
+
+            document.getElementById('licencePlate').value = person.licencePlate;
+            document.getElementById('ownerName').value = person.ownerName;
+            document.getElementById('vehicleType').value = person.vehicleType;
+
+            people.splice(index, 1);
+            localStorage.setItem(peopleDetailsKey, JSON.stringify(people));
+            populatePeopleTable();
+        }
+
+        function deletePerson(index) {
+            const people = JSON.parse(localStorage.getItem(peopleDetailsKey));
+            people.splice(index, 1);
+            localStorage.setItem(peopleDetailsKey, JSON.stringify(people));
+            populatePeopleTable();
+        }
+
+        document.getElementById('peopleDetailsForm').addEventListener('submit', savePeopleDetails);
+
+        window.onload = () => {
+            populatePeopleTable();
+            populateEntryExitLogs();
+        };
+    </script>
+</body>
+</html>

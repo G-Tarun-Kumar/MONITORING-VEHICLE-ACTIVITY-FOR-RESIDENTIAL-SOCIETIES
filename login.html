@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Vehical Monitoring</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="text-center">Welcome to VEHICLE MONITORING</h1>
+            <p class="text-center">Please select your role and login</p>
+
+            <div class="role-selector">
+                <div class="role-option" data-role="admin">
+                    <h3>ADMIN</h3>
+                    <p>SOCIETY SECRETARY</p>
+                </div>
+                <div class="role-option" data-role="security">
+                    <h3>SECURITY GUARD</h3>
+                    <p>WATCH MAN</p>
+                </div>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%">Login</button>
+                <p class="text-center" style="margin-top: 1rem">
+                    Don't have an account? <a href="signup.html">Sign up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    // Role selection handling
+    const roleOptions = document.querySelectorAll('.role-option');
+    let selectedRole = null;
+
+    roleOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove selected class from all options
+            roleOptions.forEach(opt => opt.classList.remove('selected'));
+            // Add selected class to clicked option
+            option.classList.add('selected');
+            selectedRole = option.dataset.role;
+        });
+    });
+
+    // Form submission handling
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!selectedRole) {
+                alert('Please select a role');
+                return;
+            }
+
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: selectedRole
+            };
+
+            // Here you would typically make an API call to authenticate
+            console.log('Login attempt:', formData);
+            
+            // Redirect based on role (for demonstration)
+            switch(selectedRole) {
+                case 'admin':
+                    window.location.href = 'admin.html';
+                    break;
+                case 'security':
+                    window.location.href = 'security.html';
+                    break;
+            }
+        });
+    }
+
+    if (signupForm) {
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!selectedRole) {
+                alert('Please select a role');
+                return;
+            }
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                address: document.getElementById('address').value,
+                password: document.getElementById('password').value,
+                role: selectedRole
+            };
+
+            // Here you would typically make an API call to register
+            console.log('Signup attempt:', formData);
+            
+            // Redirect to login page after successful signup
+            window.location.href = 'index.html';
+        });
+    }
+});
+    </script>
+</body>
+</html>

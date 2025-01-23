@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Waste Management System</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="text-center">Create Account</h1>
+            <p class="text-center">Join our waste management platform</p>
+
+            <div class="role-selector">
+                <div class="role-option" data-role="user">
+                    <h3>User</h3>
+                    <p>Regular citizen</p>
+                </div>
+                <div class="role-option" data-role="officer">
+                    <h3>Officer</h3>
+                    <p>Municipality</p>
+                </div>
+                <div class="role-option" data-role="driver">
+                    <h3>Driver</h3>
+                    <p>Waste collector</p>
+                </div>
+            </div>
+
+            <form id="signupForm" class="signup-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" class="form-control" name="Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" name="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" class="form-control" rows="3" name="Address" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" name="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%">Sign Up</button>
+                <p class="text-center" style="margin-top: 1rem">
+                    Already have an account? <a href="login.html">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const roleOptions = document.querySelectorAll('.role-option');
+            let selectedRole = null;
+
+            // Role selection handling
+            roleOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    roleOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedRole = option.dataset.role;
+                });
+            });
+
+            // Form submission handling
+            const signupForm = document.getElementById('signupForm');
+            const API_URL = 'https://sheetdb.io/api/v1/dhh5u2bewvuom';
+
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (!selectedRole) {
+                    alert('Please select a role');
+                    return;
+                }
+
+                const formData = {
+                    Name: document.getElementById('name').value,
+                    Email: document.getElementById('email').value,
+                    Address: document.getElementById('address').value,
+                    Password: document.getElementById('password').value,
+                    Role: selectedRole
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ data: [formData] })
+                    });
+
+                    if (response.ok) {
+                        alert('Signup successful! Redirecting to login page.');
+                        window.location.href = 'login.html';
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Error:', errorData);
+                        alert('Failed to sign up. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while signing up. Please try again later.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
